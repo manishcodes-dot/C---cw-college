@@ -21,23 +21,30 @@
         <div style="display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
                 <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Primary Mood (Required)</label>
-                <select @bind="selectedPrimaryMoodName" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);">
-                    <option value="">Select Mood...</option>
-                    @foreach (var m in allMoods)
+                <select @bind="selectedCategory" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);">
+                    <option value="">Select Category...</option>
+                    @foreach (var cluster in moodClusters)
                     {
-                        <option value="@m.Name">@m.Emoji @m.Name</option>
+                        <option value="@cluster.Key">@cluster.Value.Emoji @cluster.Key</option>
                     }
                 </select>
             </div>
-            <div style="flex: 1; min-width: 200px;">
-                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Secondary Moods (Optional)</label>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main);">
-                    @foreach (var m in allMoods)
+            <div style="flex: 1; min-width: 250px;">
+                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Specific Moods (Optional)</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main); min-height: 42px;">
+                    @if (!string.IsNullOrEmpty(selectedCategory) && moodClusters.ContainsKey(selectedCategory))
                     {
-                        <label style="font-size: 14px; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                            <input type="checkbox" checked="@IsSecondaryMoodSelected(m.Name)" @onchange="(e) => ToggleSecondaryMood(m.Name, e.Value)" />
-                            @m.Emoji
-                        </label>
+                        @foreach (var m in moodClusters[selectedCategory].Moods)
+                        {
+                            <label style="font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; background: var(--bg-card); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);">
+                                <input type="checkbox" checked="@IsSecondaryMoodSelected(m.Name)" @onchange="(e) => ToggleSecondaryMood(m, e.Value)" />
+                                @m.Emoji @m.Name
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <span style="font-size: 12px; color: var(--text-muted); align-self: center;">Select a category first</span>
                     }
                 </div>
             </div>
@@ -56,7 +63,19 @@
         <div style="margin-bottom: 24px;">
             <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Tags (Comma separated)</label>
             <input type="text" @bind="tagsString" placeholder="Work, Health, Travel..." 
-                   style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);" />
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); margin-bottom: 12px;" />
+            
+            <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Quick Select Tags:</label>
+            <div class="tag-container">
+                @foreach (var tag in prebuiltTags)
+                {
+                    <button type="button" 
+                            @onclick="() => ToggleTag(tag)"
+                            class="tag-chip @(IsTagSelected(tag) ? "active" : "")">
+                        @tag
+                    </button>
+                }
+            </div>
         </div>
 
         <textarea @bind="entry.Content" placeholder="Start writing your thoughts..." 
@@ -76,19 +95,56 @@
     private DateTime TargetDate => DateTime.TryParse(DateString, out var d) ? d : DateTime.Today;
 
     private JournalEntry entry = new();
-    private string selectedPrimaryMoodName;
+    private string _selectedCategory;
+    private string selectedCategory
+    {
+        get => _selectedCategory;
+        set
+        {
+            if (_selectedCategory != value)
+            {
+                _selectedCategory = value;
+                entry.SecondaryMoods.Clear();
+            }
+        }
+    }
     private string tagsString;
 
-    private List<Mood> allMoods = new()
+    private Dictionary<string, (string Emoji, List<Mood> Moods)> moodClusters = new()
     {
-        new Mood { Name = "Happy", Category = MoodCategory.Positive, Emoji = "😊" },
-        new Mood { Name = "Excited", Category = MoodCategory.Positive, Emoji = "🤩" },
-        new Mood { Name = "Calm", Category = MoodCategory.Neutral, Emoji = "😐" },
-        new Mood { Name = "Sad", Category = MoodCategory.Negative, Emoji = "😔" },
-        new Mood { Name = "Stressed", Category = MoodCategory.Negative, Emoji = "😫" }
+        { "Positive", ("😊", new List<Mood> {
+            new Mood { Name = "Happy", Category = MoodCategory.Positive, Emoji = "😊" },
+            new Mood { Name = "Excited", Category = MoodCategory.Positive, Emoji = "🤩" },
+            new Mood { Name = "Relaxed", Category = MoodCategory.Positive, Emoji = "😌" },
+            new Mood { Name = "Grateful", Category = MoodCategory.Positive, Emoji = "🙏" },
+            new Mood { Name = "Confident", Category = MoodCategory.Positive, Emoji = "😎" }
+        })},
+        { "Neutral", ("😐", new List<Mood> {
+            new Mood { Name = "Calm", Category = MoodCategory.Neutral, Emoji = "😐" },
+            new Mood { Name = "Thoughtful", Category = MoodCategory.Neutral, Emoji = "🤔" },
+            new Mood { Name = "Curious", Category = MoodCategory.Neutral, Emoji = "🧐" },
+            new Mood { Name = "Nostalgic", Category = MoodCategory.Neutral, Emoji = "🎞️" },
+            new Mood { Name = "Bored", Category = MoodCategory.Neutral, Emoji = "😫" }
+        })},
+        { "Negative", ("😔", new List<Mood> {
+            new Mood { Name = "Sad", Category = MoodCategory.Negative, Emoji = "😔" },
+            new Mood { Name = "Angry", Category = MoodCategory.Negative, Emoji = "😠" },
+            new Mood { Name = "Stressed", Category = MoodCategory.Negative, Emoji = "😫" },
+            new Mood { Name = "Lonely", Category = MoodCategory.Negative, Emoji = "🙁" },
+            new Mood { Name = "Anxious", Category = MoodCategory.Negative, Emoji = "😰" }
+        })}
     };
 
     private List<string> categories = new() { "Work", "Personal", "Health", "Relationships", "Travel" };
+
+    private List<string> prebuiltTags = new() 
+    { 
+        "Work", "Career", "Studies", "Family", "Friends", "Relationships", 
+        "Health", "Fitness", "Personal Growth", "Self-care", "Hobbies", "Travel", "Nature", 
+        "Finance", "Spirituality", "Birthday", "Holiday", "Vacation", "Celebration", "Exercise", 
+        "Reading", "Writing", "Cooking", "Meditation", "Yoga", "Music", "Shopping", 
+        "Parenting", "Projects", "Planning", "Reflection" 
+    };
 
     protected override void OnInitialized()
     {
@@ -107,7 +163,7 @@
                 CreatedAt = existing.CreatedAt,
                 UpdatedAt = existing.UpdatedAt
             };
-            selectedPrimaryMoodName = entry.PrimaryMood?.Name;
+            selectedCategory = entry.PrimaryMood?.Name;
             tagsString = string.Join(", ", entry.Tags);
         }
         else
@@ -118,7 +174,15 @@
 
     private void SaveEntry()
     {
-        entry.PrimaryMood = allMoods.FirstOrDefault(m => m.Name == selectedPrimaryMoodName);
+        if (!string.IsNullOrEmpty(selectedCategory) && moodClusters.ContainsKey(selectedCategory))
+        {
+            entry.PrimaryMood = new Mood 
+            { 
+                Name = selectedCategory, 
+                Category = Enum.Parse<MoodCategory>(selectedCategory), 
+                Emoji = moodClusters[selectedCategory].Emoji 
+            };
+        }
         entry.Tags = tagsString?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList() ?? new List<string>();
         JournalService.SaveEntry(entry);
         Nav.NavigateTo("/");
@@ -126,22 +190,48 @@
 
     private bool IsSecondaryMoodSelected(string name) => entry.SecondaryMoods.Any(m => m.Name == name);
 
-    private void ToggleSecondaryMood(string name, object checkedValue)
+    private void ToggleSecondaryMood(Mood mood, object checkedValue)
     {
-        var mood = allMoods.First(m => m.Name == name);
         if ((bool)checkedValue)
         {
-            if (entry.SecondaryMoods.Count < 2)
+            if (!entry.SecondaryMoods.Any(m => m.Name == mood.Name))
             {
                 entry.SecondaryMoods.Add(mood);
             }
         }
         else
         {
-            var existing = entry.SecondaryMoods.FirstOrDefault(m => m.Name == name);
+            var existing = entry.SecondaryMoods.FirstOrDefault(m => m.Name == mood.Name);
             if (existing != null) entry.SecondaryMoods.Remove(existing);
         }
     }
 
     private void GoBack() => Nav.NavigateTo("/");
+
+    private void ToggleTag(string tag)
+    {
+        var currentTags = tagsString?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(s => s.Trim())
+                                    .ToList() ?? new List<string>();
+        
+        if (currentTags.Any(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase)))
+        {
+            currentTags.RemoveAll(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase));
+        }
+        else
+        {
+            currentTags.Add(tag);
+        }
+        
+        tagsString = string.Join(", ", currentTags);
+    }
+
+    private bool IsTagSelected(string tag)
+    {
+        if (string.IsNullOrWhiteSpace(tagsString)) return false;
+        
+        return tagsString.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                         .Select(s => s.Trim())
+                         .Any(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase));
+    }
 }

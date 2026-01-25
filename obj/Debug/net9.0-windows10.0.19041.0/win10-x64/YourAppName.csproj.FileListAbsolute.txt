@@ -4,7 +4,6 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\rjsmrazor.dswa.cache.json
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\rjsmcshtml.dswa.cache.json
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\scopedcss\bundle\YourAppName.styles.css
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\lnm9z010hj-qm48untkfi.gz
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\4ei1xscl3h-6gzpyzhau4.gz
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\gc00aqfvdf-8inm30yfxf.gz
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\jjlk3sq8oc-fsrhoq7ck5.gz
@@ -18,7 +17,6 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets\msbuild.buildMultiTargeting.YourAppName.props
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets\msbuild.buildTransitive.YourAppName.props
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets.pack.json
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\lnm9z010hj-qm48untkfi.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\4ei1xscl3h-6gzpyzhau4.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\gc00aqfvdf-8inm30yfxf.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\jjlk3sq8oc-fsrhoq7ck5.br
@@ -565,3 +563,6 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\lnm9z010hj-n9iaxlneuy.gz
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\lnm9z010hj-n9iaxlneuy.br
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\YourAppName.sourcelink.json

@@ -1,2 +1,3 @@
-2026/01/25-14:12:00.057 3ab4 Creating DB C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\YourAppName.exe.WebView2\EBWebView\Default\Local Storage\leveldb since it was missing.
-2026/01/25-14:12:00.113 3ab4 Reusing MANIFEST C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\YourAppName.exe.WebView2\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
+2026/01/25-20:49:16.940 41b4 Reusing MANIFEST C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\YourAppName.exe.WebView2\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
+2026/01/25-20:49:16.958 41b4 Recovering log #3
+2026/01/25-20:49:16.965 41b4 Reusing old log C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\YourAppName.exe.WebView2\EBWebView\Default\Local Storage\leveldb/000003.log 
