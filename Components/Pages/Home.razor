@@ -1,0 +1,99 @@
+﻿@page "/"
+@using YourAppName.Services
+@using YourAppName.Models
+@inject JournalService JournalService
+@inject NavigationManager Nav
+
+<div class="fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <div>
+            <h1 style="margin-bottom: 4px;">Welcome back!</h1>
+            <p style="color: var(--text-muted); margin: 0;">Here's what's happening with your journal.</p>
+        </div>
+        <button class="btn-primary" @onclick="CreateNewEntry">
+            + New Journal Entry
+        </button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px;">
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Current Streak</h3>
+            <div style="font-size: 32px; font-weight: 700; color: var(--primary);">@JournalService.GetCurrentStreak() Days</div>
+        </div>
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Longest Streak</h3>
+            <div style="font-size: 32px; font-weight: 700; color: #10b981;">@JournalService.GetLongestStreak() Days</div>
+        </div>
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Total Entries</h3>
+            <div style="font-size: 32px; font-weight: 700;">@JournalService.GetAllEntries().Count</div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="card">
+            <h3 style="margin-bottom: 16px;">Recent Entries</h3>
+            @if (recentEntries.Any())
+            {
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    @foreach (var entry in recentEntries)
+                    {
+                        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;" @onclick="() => EditEntry(entry.Date)">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <h4 style="margin: 0;">@entry.Title</h4>
+                                <span style="font-size: 20px;">@entry.PrimaryMood?.Emoji</span>
+                            </div>
+                            <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">@entry.Date.ToString("MMMM dd, yyyy")</div>
+                            <p style="margin: 0; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main);">@entry.Content</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p style="color: var(--text-muted);">No entries yet. Start writing today!</p>
+            }
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 16px;">Quick Stats</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-muted);">Most Frequent Mood</span>
+                    <span style="font-weight: 600;">@GetMostFrequentMood()</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-muted);">Top Tag</span>
+                    <span style="font-weight: 600;">@GetTopTag()</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-muted);">Avg. Word Count</span>
+                    <span style="font-weight: 600;">@GetAvgWordCount()</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<JournalEntry> recentEntries = new();
+
+    protected override void OnInitialized()
+    {
+        recentEntries = JournalService.GetAllEntries().Take(3).ToList();
+    }
+
+    private void CreateNewEntry()
+    {
+        Nav.NavigateTo($"/edit/{DateTime.Today:yyyy-MM-dd}");
+    }
+
+    private void EditEntry(DateTime date)
+    {
+        Nav.NavigateTo($"/edit/{date:yyyy-MM-dd}");
+    }
+
+    private string GetMostFrequentMood() => JournalService.GetAllEntries().GroupBy(e => e.PrimaryMood?.Name).OrderByDescending(g => g.Count()).FirstOrDefault()?.Key ?? "N/A";
+    private string GetTopTag() => JournalService.GetAllEntries().SelectMany(e => e.Tags).GroupBy(t => t).OrderByDescending(g => g.Count()).FirstOrDefault()?.Key ?? "N/A";
+    private int GetAvgWordCount() => JournalService.GetAllEntries().Any() ? (int)JournalService.GetAllEntries().Average(e => e.WordCount) : 0;
+}

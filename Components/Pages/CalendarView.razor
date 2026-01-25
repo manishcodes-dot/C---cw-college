@@ -1,0 +1,68 @@
+@page "/calendar"
+@using YourAppName.Services
+@using YourAppName.Models
+@inject JournalService JournalService
+@inject NavigationManager Nav
+
+<div class="fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1>Calendar</h1>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <button class="nav-link" @onclick="PrevMonth" style="padding: 8px;"><svg style="width: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <h2 style="margin: 0; min-width: 200px; text-align: center;">@currentDate.ToString("MMMM yyyy")</h2>
+            <button class="nav-link" @onclick="NextMonth" style="padding: 8px;"><svg style="width: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); background: var(--bg-main); border-bottom: 1px solid var(--border);">
+            @foreach (var day in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
+            {
+                <div style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-muted); font-size: 14px;">@day</div>
+            }
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr);">
+            @for (int i = 0; i < leadingDays; i++)
+            {
+                <div style="aspect-ratio: 1; border: 0.5px solid var(--border); opacity: 0.3;"></div>
+            }
+            @for (int day = 1; day <= daysInMonth; day++)
+            {
+                var date = new DateTime(currentDate.Year, currentDate.Month, day);
+                var entry = JournalService.GetEntryByDate(date);
+                <div style="aspect-ratio: 1; border: 0.5px solid var(--border); padding: 8px; cursor: pointer; position: relative;" @onclick="() => SelectDate(date)">
+                    <span style="font-size: 14px; @(date.Date == DateTime.Today ? "background: var(--primary); color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%;" : "")">@day</span>
+                    @if (entry != null)
+                    {
+                        <div style="position: absolute; bottom: 8px; right: 8px; font-size: 18px;">@entry.PrimaryMood?.Emoji</div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private DateTime currentDate = DateTime.Today;
+    private int daysInMonth;
+    private int leadingDays;
+
+    protected override void OnInitialized()
+    {
+        CalculateMonth();
+    }
+
+    private void CalculateMonth()
+    {
+        daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+        leadingDays = (int)new DateTime(currentDate.Year, currentDate.Month, 1).DayOfWeek;
+    }
+
+    private void PrevMonth() { currentDate = currentDate.AddMonths(-1); CalculateMonth(); }
+    private void NextMonth() { currentDate = currentDate.AddMonths(1); CalculateMonth(); }
+
+    private void SelectDate(DateTime date)
+    {
+        Nav.NavigateTo($"/edit/{date:yyyy-MM-dd}");
+    }
+}

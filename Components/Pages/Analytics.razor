@@ -1,0 +1,151 @@
+@page "/analytics"
+@using YourAppName.Services
+@using YourAppName.Models
+@inject JournalService JournalService
+
+<div class="fade-in">
+    <h1 style="margin-bottom: 32px;">Analytics</h1>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+
+        <!-- Mood Distribution -->
+        <div class="card">
+            <h3 style="margin-bottom: 24px;">Mood Distribution</h3>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                @foreach (var moodGrp in GetMoodDistribution())
+                {
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                            <span>@moodGrp.Category</span>
+                            <span style="font-weight: 600;">@moodGrp.Percentage%</span>
+                        </div>
+
+                        <div style="height: 8px; background: var(--bg-main); border-radius: 4px; overflow: hidden;">
+                            <div style="
+                                height: 100%;
+                                width: @(moodGrp.Percentage + "%");
+                                background: @GetColorForCategory(moodGrp.Category);
+                                border-radius: 4px;">
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Tag Breakdown -->
+        <div class="card">
+            <h3 style="margin-bottom: 24px;">Tag Breakdown</h3>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                @foreach (var tag in GetTagUsage().Take(10))
+                {
+                    <div style="background: var(--bg-main);
+                                border: 1px solid var(--border);
+                                padding: 8px 16px;
+                                border-radius: 8px;
+                                flex: 1;
+                                min-width: 120px;">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+                            #@tag.Name
+                        </div>
+                        <div style="font-weight: 700; font-size: 18px;">
+                            @tag.Count
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Word Count Trends -->
+        <div class="card" style="grid-column: span 2;">
+            <h3 style="margin-bottom: 24px;">Word Count Trends (Last 7 Days)</h3>
+
+            <div style="display: flex;
+                        align-items: flex-end;
+                        height: 200px;
+                        gap: 12px;
+                        padding-bottom: 24px;
+                        border-bottom: 1px solid var(--border);">
+
+                @foreach (var trend in GetWordCountTrend())
+                {
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                        <div style="
+                            width: 100%;
+                            min-width: 30px;
+                            background: var(--primary);
+                            border-radius: 4px 4px 0 0;
+                            transition: height 0.3s;
+                            height: @(GetBarHeight(trend.Count, 500))px;">
+                        </div>
+
+                        <span style="font-size: 10px;
+                                     color: var(--text-muted);
+                                     transform: rotate(-45deg);
+                                     height: 30px;
+                                     white-space: nowrap;">
+                            @trend.Date.ToString("MM/dd")
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<(string Category, int Percentage)> GetMoodDistribution()
+    {
+        var entries = JournalService.GetAllEntries();
+        if (!entries.Any())
+            return new();
+
+        return entries
+            .GroupBy(e => e.PrimaryMood?.Category ?? MoodCategory.Neutral)
+            .Select(g => (g.Key.ToString(), (int)((double)g.Count() / entries.Count * 100)))
+            .ToList();
+    }
+
+    private string GetColorForCategory(string cat)
+    {
+        return cat switch
+        {
+            "Positive" => "#10b981",
+            "Neutral" => "#6366f1",
+            "Negative" => "#ef4444",
+            _ => "#94a3b8"
+        };
+    }
+
+    private List<(string Name, int Count)> GetTagUsage()
+    {
+        return JournalService.GetAllEntries()
+            .SelectMany(e => e.Tags)
+            .GroupBy(t => t)
+            .Select(g => (g.Key, g.Count()))
+            .OrderByDescending(x => x.Item2)
+            .ToList();
+    }
+
+    private List<(DateTime Date, int Count)> GetWordCountTrend()
+    {
+        var result = new List<(DateTime, int)>();
+
+        for (int i = 6; i >= 0; i--)
+        {
+            var date = DateTime.Today.AddDays(-i);
+            var entry = JournalService.GetEntryByDate(date);
+            result.Add((date, entry?.WordCount ?? 0));
+        }
+
+        return result;
+    }
+
+    private int GetBarHeight(int count, int max)
+    {
+        if (max == 0) return 0;
+        return (int)Math.Min(200, (double)count / max * 200);
+    }
+}

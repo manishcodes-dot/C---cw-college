@@ -1,0 +1,131 @@
+@page "/entries"
+@using YourAppName.Services
+@using YourAppName.Models
+@inject JournalService JournalService
+@inject NavigationManager Nav
+
+<div class="fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1>Journal Entries</h1>
+
+        <div style="display: flex; gap: 12px;">
+            <input type="text"
+                   placeholder="Search entries..."
+                   @bind="searchQuery"
+                   @bind:event="oninput"
+                   @onkeyup="PerformSearch"
+                   style="padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-main); width: 300px;" />
+        </div>
+    </div>
+
+    @if (!filteredEntries.Any())
+    {
+        <div class="card" style="text-align: center; padding: 64px;">
+            <p style="color: var(--text-muted); margin-bottom: 24px;">
+                No entries found matching your search.
+            </p>
+
+            <button class="btn-primary" @onclick="ClearSearch">
+                Clear Search
+            </button>
+        </div>
+    }
+    else
+    {
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            @foreach (var entry in filteredEntries)
+            {
+                <div class="card"
+                     style="cursor: pointer; transition: transform 0.2s;"
+                     @onclick="() => EditEntry(entry.Date)">
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 4px;">
+                                @entry.Date.ToString("dddd, MMMM dd, yyyy")
+                            </div>
+                            <h2 style="margin: 0; font-size: 22px;">
+                                @entry.Title
+                            </h2>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 24px;">
+                                @entry.PrimaryMood?.Emoji
+                            </span>
+
+                            <button class="nav-link"
+                                    style="color: #ef4444; padding: 4px;"
+                                    @onclick:stopPropagation="true"
+                                    @onclick="() => DeleteEntry(entry.Id)">
+                                🗑
+                            </button>
+                        </div>
+                    </div>
+
+                    <p style="color: var(--text-main); line-height: 1.6; margin-bottom: 16px;">
+                        @entry.Content
+                    </p>
+
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        @if (!string.IsNullOrEmpty(entry.Category))
+                        {
+                            <span style="background: rgba(99,102,241,0.1);
+                                         color: var(--primary);
+                                         padding: 4px 12px;
+                                         border-radius: 16px;
+                                         font-size: 12px;
+                                         font-weight: 600;">
+                                @entry.Category
+                            </span>
+                        }
+
+                        @foreach (var tag in entry.Tags)
+                        {
+                            <span style="background: var(--bg-main);
+                                         color: var(--text-muted);
+                                         padding: 4px 12px;
+                                         border-radius: 16px;
+                                         font-size: 12px;
+                                         border: 1px solid var(--border);">
+                                #@tag
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<JournalEntry> filteredEntries = new();
+    private string searchQuery = "";
+
+    protected override void OnInitialized()
+    {
+        filteredEntries = JournalService.GetAllEntries();
+    }
+
+    private void PerformSearch()
+    {
+        filteredEntries = JournalService.Search(searchQuery);
+    }
+
+    private void ClearSearch()
+    {
+        searchQuery = "";
+        PerformSearch();
+    }
+
+    private void EditEntry(DateTime date)
+    {
+        Nav.NavigateTo($"/edit/{date:yyyy-MM-dd}");
+    }
+
+    private void DeleteEntry(Guid id)
+    {
+        JournalService.DeleteEntry(id);
+        PerformSearch();
+    }
+}

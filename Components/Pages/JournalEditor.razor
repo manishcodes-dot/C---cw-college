@@ -1,0 +1,147 @@
+@page "/edit/{DateString}"
+@using YourAppName.Services
+@using YourAppName.Models
+@inject JournalService JournalService
+@inject NavigationManager Nav
+
+<div class="fade-in" style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <button class="nav-link" @onclick="GoBack" style="background: none; border: none; cursor: pointer;">
+            <svg class="nav-icon" style="margin: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+        </button>
+        <div style="font-weight: 600; color: var(--text-muted);">@TargetDate.ToString("D")</div>
+        <button class="btn-primary" @onclick="SaveEntry">Save Entry</button>
+    </div>
+
+    <div class="card">
+        <input type="text" @bind="entry.Title" placeholder="Entry Title..." 
+               style="width: 100%; font-size: 32px; font-weight: 700; border: none; outline: none; background: transparent; color: var(--text-main); margin-bottom: 24px;" />
+        
+        <div style="display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Primary Mood (Required)</label>
+                <select @bind="selectedPrimaryMoodName" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);">
+                    <option value="">Select Mood...</option>
+                    @foreach (var m in allMoods)
+                    {
+                        <option value="@m.Name">@m.Emoji @m.Name</option>
+                    }
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Secondary Moods (Optional)</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main);">
+                    @foreach (var m in allMoods)
+                    {
+                        <label style="font-size: 14px; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" checked="@IsSecondaryMoodSelected(m.Name)" @onchange="(e) => ToggleSecondaryMood(m.Name, e.Value)" />
+                            @m.Emoji
+                        </label>
+                    }
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Category</label>
+                <select @bind="entry.Category" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);">
+                    <option value="">Select Category...</option>
+                    @foreach (var c in categories)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Tags (Comma separated)</label>
+            <input type="text" @bind="tagsString" placeholder="Work, Health, Travel..." 
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);" />
+        </div>
+
+        <textarea @bind="entry.Content" placeholder="Start writing your thoughts..." 
+                  style="width: 100%; min-height: 400px; border: none; outline: none; background: transparent; color: var(--text-main); font-size: 18px; line-height: 1.6; resize: none;"></textarea>
+    </div>
+
+    @if (entry.UpdatedAt != entry.CreatedAt)
+    {
+        <div style="text-align: right; color: var(--text-muted); font-size: 12px; margin-top: 12px;">
+            Last updated: @entry.UpdatedAt.ToString("g")
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string DateString { get; set; }
+    private DateTime TargetDate => DateTime.TryParse(DateString, out var d) ? d : DateTime.Today;
+
+    private JournalEntry entry = new();
+    private string selectedPrimaryMoodName;
+    private string tagsString;
+
+    private List<Mood> allMoods = new()
+    {
+        new Mood { Name = "Happy", Category = MoodCategory.Positive, Emoji = "😊" },
+        new Mood { Name = "Excited", Category = MoodCategory.Positive, Emoji = "🤩" },
+        new Mood { Name = "Calm", Category = MoodCategory.Neutral, Emoji = "😐" },
+        new Mood { Name = "Sad", Category = MoodCategory.Negative, Emoji = "😔" },
+        new Mood { Name = "Stressed", Category = MoodCategory.Negative, Emoji = "😫" }
+    };
+
+    private List<string> categories = new() { "Work", "Personal", "Health", "Relationships", "Travel" };
+
+    protected override void OnInitialized()
+    {
+        var existing = JournalService.GetEntryByDate(TargetDate);
+        if (existing != null)
+        {
+            entry = new JournalEntry
+            {
+                Id = existing.Id,
+                Title = existing.Title,
+                Content = existing.Content,
+                Date = existing.Date,
+                PrimaryMood = existing.PrimaryMood,
+                Category = existing.Category,
+                Tags = existing.Tags,
+                CreatedAt = existing.CreatedAt,
+                UpdatedAt = existing.UpdatedAt
+            };
+            selectedPrimaryMoodName = entry.PrimaryMood?.Name;
+            tagsString = string.Join(", ", entry.Tags);
+        }
+        else
+        {
+            entry.Date = TargetDate;
+        }
+    }
+
+    private void SaveEntry()
+    {
+        entry.PrimaryMood = allMoods.FirstOrDefault(m => m.Name == selectedPrimaryMoodName);
+        entry.Tags = tagsString?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList() ?? new List<string>();
+        JournalService.SaveEntry(entry);
+        Nav.NavigateTo("/");
+    }
+
+    private bool IsSecondaryMoodSelected(string name) => entry.SecondaryMoods.Any(m => m.Name == name);
+
+    private void ToggleSecondaryMood(string name, object checkedValue)
+    {
+        var mood = allMoods.First(m => m.Name == name);
+        if ((bool)checkedValue)
+        {
+            if (entry.SecondaryMoods.Count < 2)
+            {
+                entry.SecondaryMoods.Add(mood);
+            }
+        }
+        else
+        {
+            var existing = entry.SecondaryMoods.FirstOrDefault(m => m.Name == name);
+            if (existing != null) entry.SecondaryMoods.Remove(existing);
+        }
+    }
+
+    private void GoBack() => Nav.NavigateTo("/");
+}
