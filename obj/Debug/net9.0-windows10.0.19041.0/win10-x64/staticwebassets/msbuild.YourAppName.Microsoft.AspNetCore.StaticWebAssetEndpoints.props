@@ -1,16 +1,16 @@
 ﻿<Project>
   <ItemGroup>
-    <StaticWebAssetEndpoint Include="css/app.1b1l6e7ru5.css">
-      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\app.css'))</AssetFile>
-      <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"1b1l6e7ru5"},{"Name":"integrity","Value":"sha256-3eeZoO5xaB5uXZ2SwsSwsZ5seKcLJdNvx8l645NTJYw="},{"Name":"label","Value":"css/app.css"}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"4665"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u00223eeZoO5xaB5uXZ2SwsSwsZ5seKcLJdNvx8l645NTJYw=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 05:54:38 GMT"}]]]></ResponseHeaders>
-    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="css/app.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\app.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-3eeZoO5xaB5uXZ2SwsSwsZ5seKcLJdNvx8l645NTJYw="}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"4665"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u00223eeZoO5xaB5uXZ2SwsSwsZ5seKcLJdNvx8l645NTJYw=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 05:54:38 GMT"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-T1d685mDlZ40TY2LwVUUPzphuipJ5ZrFHQxsfceypMo="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"4890"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022T1d685mDlZ40TY2LwVUUPzphuipJ5ZrFHQxsfceypMo=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 17:26:15 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="css/app.v0nbecxa4q.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\app.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"v0nbecxa4q"},{"Name":"integrity","Value":"sha256-T1d685mDlZ40TY2LwVUUPzphuipJ5ZrFHQxsfceypMo="},{"Name":"label","Value":"css/app.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"4890"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022T1d685mDlZ40TY2LwVUUPzphuipJ5ZrFHQxsfceypMo=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 17:26:15 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="css/bootstrap/bootstrap.min.6gzpyzhau4.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\bootstrap\bootstrap.min.css'))</AssetFile>
@@ -48,17 +48,17 @@
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"lx8qdggmh9"},{"Name":"integrity","Value":"sha256-uZxpexI0o55mUhMSEP/qDDHhmHfzaBQGYUJUpfMwN34="},{"Name":"label","Value":"index.html"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1388"},{"Name":"Content-Type","Value":"text/html"},{"Name":"ETag","Value":"\u0022uZxpexI0o55mUhMSEP/qDDHhmHfzaBQGYUJUpfMwN34=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 10:00:53 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
-    <StaticWebAssetEndpoint Include="js/quill-interop.aof4o4rtel.js">
-      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\quill-interop.js'))</AssetFile>
-      <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"aof4o4rtel"},{"Name":"integrity","Value":"sha256-pj9l21EjnVLs291ATs0yAZ9M\u002B4/nzU4ZfZcOyD6YJaY="},{"Name":"label","Value":"js/quill-interop.js"}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2358"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022pj9l21EjnVLs291ATs0yAZ9M\u002B4/nzU4ZfZcOyD6YJaY=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 10:01:08 GMT"}]]]></ResponseHeaders>
-    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="js/quill-interop.js">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\quill-interop.js'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-pj9l21EjnVLs291ATs0yAZ9M\u002B4/nzU4ZfZcOyD6YJaY="}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"2358"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022pj9l21EjnVLs291ATs0yAZ9M\u002B4/nzU4ZfZcOyD6YJaY=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 10:01:08 GMT"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-o\u002BzOmZG61grgUpqnPODjRa7QvBEHC7StF0F\u002Bm/OyK0s="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"3463"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022o\u002BzOmZG61grgUpqnPODjRa7QvBEHC7StF0F\u002Bm/OyK0s=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 17:26:52 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="js/quill-interop.lq6p9jdmpu.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\quill-interop.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"lq6p9jdmpu"},{"Name":"integrity","Value":"sha256-o\u002BzOmZG61grgUpqnPODjRa7QvBEHC7StF0F\u002Bm/OyK0s="},{"Name":"label","Value":"js/quill-interop.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"3463"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022o\u002BzOmZG61grgUpqnPODjRa7QvBEHC7StF0F\u002Bm/OyK0s=\u0022"},{"Name":"Last-Modified","Value":"Tue, 27 Jan 2026 17:26:52 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
   </ItemGroup>
 </Project>

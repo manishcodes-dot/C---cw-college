@@ -9,13 +9,48 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
         <h1>Journal Entries</h1>
 
-        <div style="display: flex; gap: 12px;">
-            <input type="text"
-                   placeholder="Search entries..."
-                   @bind="searchQuery"
-                   @bind:event="oninput"
-                   @onkeyup="PerformSearch"
-                   style="padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-main); width: 300px;" />
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; background: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow);">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 12px; color: var(--text-muted); font-weight: 600;">MOOD</label>
+                <select @bind="selectedMood" @bind:after="PerformSearch" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); font-size: 14px; min-width: 140px; cursor: pointer;">
+                    <option value="">All Moods</option>
+                    @foreach (var mood in uniqueMoods)
+                    {
+                        <option value="@mood">@mood</option>
+                    }
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 12px; color: var(--text-muted); font-weight: 600;">TAG</label>
+                <select @bind="selectedTag" @bind:after="PerformSearch" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); font-size: 14px; min-width: 140px; cursor: pointer;">
+                    <option value="">All Tags</option>
+                    @foreach (var tag in uniqueTags)
+                    {
+                        <option value="@tag">#@tag</option>
+                    }
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 200px;">
+                <label style="font-size: 12px; color: var(--text-muted); font-weight: 600;">SEARCH</label>
+                <div style="position: relative;">
+                    <input type="text"
+                           placeholder="Search titles, content, or dates..."
+                           @bind="searchQuery"
+                           @bind:event="oninput"
+                           @onkeyup="PerformSearch"
+                           style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); font-size: 14px;" />
+                    <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(searchQuery) || !string.IsNullOrEmpty(selectedMood) || !string.IsNullOrEmpty(selectedTag))
+            {
+                <button @onclick="ClearSearch" style="padding: 8px 16px; border-radius: 8px; border: none; background: rgba(99, 102, 241, 0.1); color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    Reset Filters
+                </button>
+            }
         </div>
     </div>
 
@@ -115,21 +150,43 @@
 
 @code {
     private List<JournalEntry> filteredEntries = new();
+    private List<string> uniqueMoods = new();
+    private List<string> uniqueTags = new();
     private string searchQuery = "";
+    private string selectedMood = "";
+    private string selectedTag = "";
 
     protected override async Task OnInitializedAsync()
     {
-        filteredEntries = await JournalService.GetAllEntries();
+        var allEntries = await JournalService.GetAllEntries();
+        
+        uniqueMoods = allEntries
+            .SelectMany(e => new[] { e.PrimaryMood?.Name }.Concat(e.SecondaryMoods.Select(m => m.Name)))
+            .Where(m => !string.IsNullOrEmpty(m))
+            .Distinct()
+            .OrderBy(m => m)
+            .ToList();
+            
+        uniqueTags = allEntries
+            .SelectMany(e => e.Tags)
+            .Where(t => !string.IsNullOrEmpty(t))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(t => t)
+            .ToList();
+
+        filteredEntries = allEntries;
     }
 
     private async Task PerformSearch()
     {
-        filteredEntries = await JournalService.Search(searchQuery);
+        filteredEntries = await JournalService.Search(searchQuery, selectedMood, selectedTag);
     }
 
     private async Task ClearSearch()
     {
         searchQuery = "";
+        selectedMood = "";
+        selectedTag = "";
         await PerformSearch();
     }
 

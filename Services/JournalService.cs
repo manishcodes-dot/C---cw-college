@@ -75,24 +75,40 @@ namespace YourAppName.Services
             await db.DeleteAsync<JournalEntry>(id);
         }
 
-        public async Task<List<JournalEntry>> Search(string query)
+        public async Task<List<JournalEntry>> Search(string query, string? moodFilter = null, string? tagFilter = null)
         {
-            if (string.IsNullOrWhiteSpace(query)) return await GetAllEntries();
-            
             var allEntries = await GetAllEntries();
-            var lowerQuery = query.ToLower();
+            var filtered = allEntries.AsEnumerable();
 
-            // Try to see if the query is a date
-            bool isDate = DateTime.TryParse(query, out var searchDate);
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                var lowerQuery = query.ToLower();
+                bool isDate = DateTime.TryParse(query, out var searchDate);
 
-            return allEntries.Where(e => 
-                (isDate && e.Date.Date == searchDate.Date) ||
-                (e.Title?.ToLower().Contains(lowerQuery) ?? false) || 
-                (e.Content?.ToLower().Contains(lowerQuery) ?? false) ||
-                (e.Tags.Any(t => t.ToLower().Contains(lowerQuery))) ||
-                (e.Date.ToString("MMMM dd, yyyy").ToLower().Contains(lowerQuery)) ||
-                (e.Date.ToString("yyyy-MM-dd").ToLower().Contains(lowerQuery))
-            ).ToList();
+                filtered = filtered.Where(e =>
+                    (isDate && e.Date.Date == searchDate.Date) ||
+                    (e.Title?.ToLower().Contains(lowerQuery) ?? false) ||
+                    (e.Content?.ToLower().Contains(lowerQuery) ?? false) ||
+                    (e.Tags.Any(t => t.ToLower().Contains(lowerQuery))) ||
+                    (e.Date.ToString("MMMM dd, yyyy").ToLower().Contains(lowerQuery)) ||
+                    (e.Date.ToString("yyyy-MM-dd").ToLower().Contains(lowerQuery))
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(moodFilter))
+            {
+                filtered = filtered.Where(e => 
+                    e.PrimaryMood?.Name == moodFilter || 
+                    e.SecondaryMoods.Any(m => m.Name == moodFilter)
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(tagFilter))
+            {
+                filtered = filtered.Where(e => e.Tags.Contains(tagFilter, StringComparer.OrdinalIgnoreCase));
+            }
+
+            return filtered.ToList();
         }
 
         public async Task<int> GetCurrentStreak()

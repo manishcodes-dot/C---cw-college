@@ -196,12 +196,12 @@ h3 {
 .ql-container.ql-snow {
     border: none !important;
     font-family: inherit !important;
-    font-size: 18px !important;
 }
 
 .ql-editor {
     padding: 12px 0 !important;
     min-height: 400px;
+    font-size: 18px;
 }
 
 .ql-editor.ql-blank::before {
@@ -224,7 +224,22 @@ h3 {
 
 .ql-editor p,
 .ql-editor ol,
-.ql-editor ul {
+.ql-editor ul,
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3 {
     color: var(--text-main);
     line-height: 1.6;
+}
+
+.ql-editor h1 {
+    font-size: 2.2em;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.ql-editor h2 {
+    font-size: 1.8em;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }

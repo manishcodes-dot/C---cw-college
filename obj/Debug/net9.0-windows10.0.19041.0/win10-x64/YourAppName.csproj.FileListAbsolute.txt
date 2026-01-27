@@ -562,8 +562,6 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\YourAppName.sourcelink.json
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\lnm9z010hj-1b1l6e7ru5.gz
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\lnm9z010hj-1b1l6e7ru5.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\wwwroot\js\quill-interop.js.gz
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\wwwroot\js\quill-interop.js.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\wwwroot\js\quill-interop.js
@@ -573,6 +571,8 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\SQLitePCLRaw.provider.e_sqlite3.dll
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\e_sqlite3.dll
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\jjlk3sq8oc-lx8qdggmh9.gz
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\gkhm1ail5h-aof4o4rtel.gz
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\jjlk3sq8oc-lx8qdggmh9.br
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\gkhm1ail5h-aof4o4rtel.br
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\lnm9z010hj-v0nbecxa4q.gz
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\gkhm1ail5h-lq6p9jdmpu.gz
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\lnm9z010hj-v0nbecxa4q.br
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\gkhm1ail5h-lq6p9jdmpu.br

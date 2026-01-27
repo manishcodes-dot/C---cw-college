@@ -19,19 +19,8 @@
     </div>
 
     <div class="card">
-        <h3 style="margin-bottom: 24px;">Security</h3>
-        <div style="margin-bottom: 24px;">
-            <div style="font-weight: 600; margin-bottom: 4px;">PIN Protection</div>
-            <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">Secure your journal with a 4-digit PIN.</div>
-            
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <input type="password" maxlength="4" placeholder="Enter PIN" @bind="pin"
-                       style="width: 120px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); text-align: center; letter-spacing: 0.5em;" />
-                <button class="btn-primary" @onclick="SavePin">Update PIN</button>
-            </div>
-        </div>
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 24px;">
+        <h3 style="margin-bottom: 24px;">Data Management</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <div style="font-weight: 600; margin-bottom: 4px;">Export Journal</div>
                 <div style="font-size: 14px; color: var(--text-muted);">Download all entries as a PDF document.</div>
@@ -43,24 +32,10 @@
 
 @code {
     private bool isDarkMode = false;
-    private string pin = "";
-
+ 
     private async Task ToggleTheme()
     {
         isDarkMode = !isDarkMode;
         await JS.InvokeVoidAsync("setTheme", isDarkMode ? "dark" : "light");
-    }
-
-    private void SavePin()
-    {
-        // In a real app, this would be saved to secure storage
-        if (pin.Length == 4)
-        {
-            JS.InvokeVoidAsync("alert", "PIN Updated successfully!");
-        }
-        else
-        {
-            JS.InvokeVoidAsync("alert", "PIN must be 4 digits.");
-        }
     }
 }
