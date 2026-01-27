@@ -12,12 +12,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>n9iaxlneuy</Fingerprint>
-      <Integrity>BWADadCZNB+KDQ3QKwnTOJKAAL2ynDBRcatWzAJzt30=</Integrity>
+      <Fingerprint>1b1l6e7ru5</Fingerprint>
+      <Integrity>3eeZoO5xaB5uXZ2SwsSwsZ5seKcLJdNvx8l645NTJYw=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>3735</FileLength>
-      <LastWriteTime>Sun, 25 Jan 2026 14:58:13 GMT</LastWriteTime>
+      <FileLength>4665</FileLength>
+      <LastWriteTime>Tue, 27 Jan 2026 05:54:38 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\app.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\bootstrap\bootstrap.min.css'))">
@@ -72,13 +72,33 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>fsrhoq7ck5</Fingerprint>
-      <Integrity>ESmrc/P/2PSaWrU22jwL4zXTguZYWVywk8o5tL012jw=</Integrity>
+      <Fingerprint>przj45v8jl</Fingerprint>
+      <Integrity>Kxx6CoJNi5+KSYs6L2ULgAGxAAqP1SXFIuTVxZOQFjw=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>1006</FileLength>
-      <LastWriteTime>Sun, 25 Jan 2026 08:09:38 GMT</LastWriteTime>
+      <FileLength>1252</FileLength>
+      <LastWriteTime>Tue, 27 Jan 2026 05:54:26 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\quill-interop.js'))">
+      <SourceType>Package</SourceType>
+      <SourceId>YourAppName</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>/</BasePath>
+      <RelativePath>js/quill-interop.js</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>y68csrsn7e</Fingerprint>
+      <Integrity>ehxSTFEbwCtnDgONfFdXYA2D8j/PvVwxw34gBYq+xc4=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <FileLength>876</FileLength>
+      <LastWriteTime>Tue, 27 Jan 2026 05:54:22 GMT</LastWriteTime>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\quill-interop.js'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 @using YourAppName.Models
 @inject JournalService JournalService
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <div class="fade-in" style="max-width: 800px; margin: 0 auto;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
@@ -48,15 +49,12 @@
                     }
                 </div>
             </div>
+
+            </div>
             <div style="flex: 1; min-width: 200px;">
-                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Category</label>
-                <select @bind="entry.Category" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);">
-                    <option value="">Select Category...</option>
-                    @foreach (var c in categories)
-                    {
-                        <option value="@c">@c</option>
-                    }
-                </select>
+                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Security PIN (Optional)</label>
+                <input type="password" @bind="entry.Pin" placeholder="Set 4-digit PIN..." maxlength="4"
+                       style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);" />
             </div>
         </div>
 
@@ -78,8 +76,7 @@
             </div>
         </div>
 
-        <textarea @bind="entry.Content" placeholder="Start writing your thoughts..." 
-                  style="width: 100%; min-height: 400px; border: none; outline: none; background: transparent; color: var(--text-main); font-size: 18px; line-height: 1.6; resize: none;"></textarea>
+        <div @ref="quillEditor" style="width: 100%;"></div>
     </div>
 
     @if (entry.UpdatedAt != entry.CreatedAt)
@@ -88,7 +85,29 @@
             Last updated: @entry.UpdatedAt.ToString("g")
         </div>
     }
-</div>
+
+
+@if (showPinModal)
+{
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px);">
+        <div class="card" style="width: 320px; text-align: center; padding: 32px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+            <h3 style="margin-bottom: 8px;">Locked Entry</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">This entry is protected. Please enter the PIN to view.</p>
+            <input type="password" @bind="enteredPin" maxlength="4"
+                   style="width: 100%; padding: 12px; font-size: 24px; text-align: center; letter-spacing: 0.5em; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); margin-bottom: 24px;" 
+                   placeholder="****" />
+            @if (pinError)
+            {
+                <div style="color: #ef4444; font-size: 12px; margin-bottom: 16px;">Incorrect PIN. Please try again.</div>
+            }
+            <div style="display: flex; gap: 12px;">
+                <button class="nav-link" @onclick="GoBack" style="flex: 1; justify-content: center;">Cancel</button>
+                <button class="btn-primary" @onclick="VerifyPin" style="flex: 1;">Unlock</button>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter] public string DateString { get; set; }
@@ -135,6 +154,10 @@
         })}
     };
 
+    private string enteredPin;
+    private bool showPinModal = false;
+    private bool pinError = false;
+
     private List<string> categories = new() { "Work", "Personal", "Health", "Relationships", "Travel" };
 
     private List<string> prebuiltTags = new() 
@@ -145,6 +168,22 @@
         "Reading", "Writing", "Cooking", "Meditation", "Yoga", "Music", "Shopping", 
         "Parenting", "Projects", "Planning", "Reflection" 
     };
+
+    private ElementReference quillEditor;
+    private bool isInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isInitialized)
+        {
+            await JS.InvokeVoidAsync("quillInterop.initialize", quillEditor, "Start writing your thoughts...");
+            if (!string.IsNullOrEmpty(entry.Content))
+            {
+                await JS.InvokeVoidAsync("quillInterop.setContent", quillEditor, entry.Content);
+            }
+            isInitialized = true;
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -160,9 +199,16 @@
                 PrimaryMood = existing.PrimaryMood,
                 Category = existing.Category,
                 Tags = existing.Tags,
+                Pin = existing.Pin,
                 CreatedAt = existing.CreatedAt,
                 UpdatedAt = existing.UpdatedAt
             };
+
+            if (!string.IsNullOrEmpty(entry.Pin))
+            {
+                showPinModal = true;
+            }
+
             selectedCategory = entry.PrimaryMood?.Name;
             tagsString = string.Join(", ", entry.Tags);
         }
@@ -172,8 +218,9 @@
         }
     }
 
-    private void SaveEntry()
+    private async Task SaveEntry()
     {
+        entry.Content = await JS.InvokeAsync<string>("quillInterop.getContent", quillEditor);
         if (!string.IsNullOrEmpty(selectedCategory) && moodClusters.ContainsKey(selectedCategory))
         {
             entry.PrimaryMood = new Mood 
@@ -186,6 +233,20 @@
         entry.Tags = tagsString?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList() ?? new List<string>();
         JournalService.SaveEntry(entry);
         Nav.NavigateTo("/");
+    }
+
+    private void VerifyPin()
+    {
+        if (enteredPin == entry.Pin)
+        {
+            showPinModal = false;
+            pinError = false;
+        }
+        else
+        {
+            pinError = true;
+            enteredPin = "";
+        }
     }
 
     private bool IsSecondaryMoodSelected(string name) => entry.SecondaryMoods.Any(m => m.Name == name);

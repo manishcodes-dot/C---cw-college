@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>YourAppName</title>
     <base href="/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="YourAppName.styles.css" />
     <link rel="icon" href="data:,">
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 
 <body>
@@ -24,6 +29,7 @@
     </div>
 
     <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script src="js/quill-interop.js"></script>
     <script>
         window.setTheme = (theme) => {
             document.documentElement.setAttribute('data-theme', theme);

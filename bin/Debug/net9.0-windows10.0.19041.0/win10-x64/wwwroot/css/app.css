@@ -185,3 +185,46 @@ h3 {
 [data-theme='dark'] .tag-container {
     background: rgba(255, 255, 255, 0.02);
 }
+
+/* Quill Editor Customization */
+.ql-toolbar.ql-snow {
+    border: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 8px 0 !important;
+}
+
+.ql-container.ql-snow {
+    border: none !important;
+    font-family: inherit !important;
+    font-size: 18px !important;
+}
+
+.ql-editor {
+    padding: 12px 0 !important;
+    min-height: 400px;
+}
+
+.ql-editor.ql-blank::before {
+    color: var(--text-muted) !important;
+    font-style: normal !important;
+    left: 0 !important;
+}
+
+[data-theme='dark'] .ql-toolbar.ql-snow .ql-stroke {
+    stroke: var(--text-main) !important;
+}
+
+[data-theme='dark'] .ql-toolbar.ql-snow .ql-fill {
+    fill: var(--text-main) !important;
+}
+
+[data-theme='dark'] .ql-toolbar.ql-snow .ql-picker {
+    color: var(--text-main) !important;
+}
+
+.ql-editor p,
+.ql-editor ol,
+.ql-editor ul {
+    color: var(--text-main);
+    line-height: 1.6;
+}

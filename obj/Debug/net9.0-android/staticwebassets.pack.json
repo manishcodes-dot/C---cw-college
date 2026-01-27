@@ -17,6 +17,10 @@
       "PackagePath": "staticwebassets\\index.html"
     },
     {
+      "Id": "C:\\Users\\ACER\\Documents\\3rd Year code\\app test\\test cw1\\wwwroot\\js\\quill-interop.js",
+      "PackagePath": "staticwebassets\\js\\quill-interop.js"
+    },
+    {
       "Id": "obj\\Debug\\net9.0-android\\staticwebassets\\msbuild.YourAppName.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },

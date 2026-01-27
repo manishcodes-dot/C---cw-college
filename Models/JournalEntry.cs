@@ -31,7 +31,18 @@ namespace YourAppName.Models
         
         public string Category { get; set; }
         public List<string> Tags { get; set; } = new List<string>();
+        public string Pin { get; set; } // Optional PIN for security
 
-        public int WordCount => string.IsNullOrWhiteSpace(Content) ? 0 : Content.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        public int WordCount => string.IsNullOrWhiteSpace(Content) ? 0 : PlainTextContent.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Length;
+
+        public string PlainTextContent 
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Content)) return string.Empty;
+                // Simple regex to strip HTML tags for preview
+                return System.Text.RegularExpressions.Regex.Replace(Content, "<.*?>", string.Empty);
+            }
+        }
     }
 }

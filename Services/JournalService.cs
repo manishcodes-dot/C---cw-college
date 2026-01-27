@@ -29,6 +29,7 @@ namespace YourAppName.Services
                 existing.SecondaryMoods = entry.SecondaryMoods;
                 existing.Category = entry.Category;
                 existing.Tags = entry.Tags;
+                existing.Pin = entry.Pin;
                 existing.UpdatedAt = DateTime.Now;
             }
             else

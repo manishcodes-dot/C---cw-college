@@ -6,7 +6,6 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\scopedcss\bundle\YourAppName.styles.css
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\4ei1xscl3h-6gzpyzhau4.gz
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\gc00aqfvdf-8inm30yfxf.gz
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\jjlk3sq8oc-fsrhoq7ck5.gz
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets.build.json
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets.build.json.cache
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets.development.json
@@ -19,7 +18,6 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets.pack.json
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\4ei1xscl3h-6gzpyzhau4.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\gc00aqfvdf-8inm30yfxf.br
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\jjlk3sq8oc-fsrhoq7ck5.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets.publish.json
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\staticwebassets.publish.endpoints.json
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauiimage.inputs
@@ -563,6 +561,13 @@ C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\lnm9z010hj-n9iaxlneuy.gz
-C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\lnm9z010hj-n9iaxlneuy.br
 C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\YourAppName.sourcelink.json
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\lnm9z010hj-1b1l6e7ru5.gz
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\jjlk3sq8oc-przj45v8jl.gz
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\gkhm1ail5h-y68csrsn7e.gz
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\lnm9z010hj-1b1l6e7ru5.br
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\jjlk3sq8oc-przj45v8jl.br
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\gkhm1ail5h-y68csrsn7e.br
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\wwwroot\js\quill-interop.js.gz
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\wwwroot\js\quill-interop.js.br
+C:\Users\ACER\Documents\3rd Year code\app test\test cw1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\wwwroot\js\quill-interop.js

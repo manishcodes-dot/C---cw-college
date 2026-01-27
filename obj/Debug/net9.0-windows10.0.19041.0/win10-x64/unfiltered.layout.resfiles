@@ -1,9 +1,11 @@
 wwwroot\css\bootstrap\bootstrap.min.css.gz
 wwwroot\css\bootstrap\bootstrap.min.css.map.gz
+wwwroot\js\quill-interop.js.gz
 wwwroot\index.html.gz
 wwwroot\css\app.css.gz
 wwwroot\css\bootstrap\bootstrap.min.css.br
 wwwroot\css\bootstrap\bootstrap.min.css.map.br
+wwwroot\js\quill-interop.js.br
 wwwroot\index.html.br
 wwwroot\css\app.css.br
 OpenSans-Regular.ttf
@@ -68,3 +70,4 @@ wwwroot\css\app.css
 wwwroot\css\bootstrap\bootstrap.min.css
 wwwroot\css\bootstrap\bootstrap.min.css.map
 wwwroot\index.html
+wwwroot\js\quill-interop.js

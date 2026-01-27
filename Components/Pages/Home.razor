@@ -40,11 +40,17 @@
                     {
                         <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;" @onclick="() => EditEntry(entry.Date)">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                <h4 style="margin: 0;">@entry.Title</h4>
+                                <h4 style="margin: 0;">
+                                    @entry.Title
+                                    @if (!string.IsNullOrEmpty(entry.Pin))
+                                    {
+                                        <span title="Locked" style="font-size: 14px; margin-left:8px; opacity: 0.6;">🔒</span>
+                                    }
+                                </h4>
                                 <span style="font-size: 20px;">@entry.PrimaryMood?.Emoji</span>
                             </div>
                             <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">@entry.Date.ToString("MMMM dd, yyyy")</div>
-                            <p style="margin: 0; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main);">@entry.Content</p>
+                            <p style="margin: 0; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main);">@entry.PlainTextContent</p>
                         </div>
                     }
                 </div>

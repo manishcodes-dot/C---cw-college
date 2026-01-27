@@ -50,6 +50,11 @@
                         </div>
 
                         <div style="display: flex; align-items: center; gap: 12px;">
+                            @if (!string.IsNullOrEmpty(entry.Pin))
+                            {
+                                <span title="Locked Entry" style="font-size: 16px; color: var(--text-muted);">🔒</span>
+                            }
+
                             <span style="font-size: 24px;">
                                 @entry.PrimaryMood?.Emoji
                             </span>
@@ -64,7 +69,7 @@
                     </div>
 
                     <p style="color: var(--text-main); line-height: 1.6; margin-bottom: 16px;">
-                        @entry.Content
+                        @entry.PlainTextContent
                     </p>
 
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
