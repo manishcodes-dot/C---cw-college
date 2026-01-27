@@ -2,150 +2,468 @@
 @using YourAppName.Services
 @using YourAppName.Models
 @inject JournalService JournalService
+@inject NavigationManager Nav
 
-<div class="fade-in">
-    <h1 style="margin-bottom: 32px;">Analytics</h1>
+<style>
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+    .stat-card {
+        padding: 24px;
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
 
-        <!-- Mood Distribution -->
-        <div class="card">
-            <h3 style="margin-bottom: 24px;">Mood Distribution</h3>
+    .stat-value {
+        font-size: 32px;
+        font-weight: 800;
+        margin: 8px 0;
+        color: var(--text-main);
+    }
 
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                @foreach (var moodGrp in GetMoodDistribution())
-                {
+    .stat-label {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .chart-container {
+        height: 240px;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .chart-bar {
+        flex: 1;
+        background: var(--primary);
+        border-radius: 4px 4px 0 0;
+        transition: all 0.3s ease;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .chart-bar:hover {
+        background: var(--primary-hover);
+        filter: brightness(1.1);
+    }
+
+    .chart-bar:hover::after {
+        content: attr(data-value);
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text-main);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+    }
+
+    .donut-chart {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .donut-center {
+        width: 120px;
+        height: 120px;
+        background: var(--bg-card);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+    }
+
+    .missed-days-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+    }
+
+    .day-cell {
+        aspect-ratio: 1;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        border: 1px solid var(--border);
+    }
+
+    .day-present { background: rgba(16, 185, 129, 0.1); color: #10b981; border-color: #10b981; }
+    .day-missed { background: rgba(239, 68, 68, 0.05); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+    .day-future { background: var(--bg-main); color: var(--text-muted); opacity: 0.5; }
+
+    .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .cloud-item {
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        transition: all 0.2s;
+        cursor: default;
+    }
+
+    .cloud-item:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="fade-in" style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px;">
+        <div>
+            <h1 style="margin: 0; font-size: 36px;">Journal Insights</h1>
+            <p style="color: var(--text-muted); margin: 4px 0 0 0;">An overview of your writing habits and emotional trends.</p>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 14px; color: var(--text-muted);">Current Streak</div>
+            <div style="font-size: 24px; font-weight: 700; color: var(--primary);">🔥 @currentStreak Days</div>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+        <!-- Streak Info -->
+        <div class="stat-card" style="display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg, var(--bg-card) 0%, rgba(99, 102, 241, 0.05) 100%);">
+            <div>
+                <div class="stat-label">Longest Streak</div>
+                <div class="stat-value">@longestStreak <span style="font-size: 18px; font-weight: 500; color: var(--text-muted);">days</span></div>
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                    <span style="color: var(--text-muted);">Total Entries</span>
+                    <span style="font-weight: 600;">@allEntries.Count</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Most Frequent Mood -->
+        <div class="stat-card">
+            <div class="stat-label">Most Frequent Mood</div>
+            @if (!string.IsNullOrEmpty(mostFrequentMood))
+            {
+                <div style="display: flex; align-items: center; gap: 16px; margin-top: 12px;">
+                    <div style="font-size: 48px;">@mostFrequentMoodEmoji</div>
                     <div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                            <span>@moodGrp.Category</span>
-                            <span style="font-weight: 600;">@moodGrp.Percentage%</span>
-                        </div>
+                        <div style="font-size: 24px; font-weight: 700;">@mostFrequentMood</div>
+                        <div style="font-size: 13px; color: var(--text-muted);">Recorded @mostFrequentMoodCount times</div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="stat-value">None</div>
+            }
+        </div>
 
-                        <div style="height: 8px; background: var(--bg-main); border-radius: 4px; overflow: hidden;">
-                            <div style="
-                                height: 100%;
-                                width: @(moodGrp.Percentage + "%");
-                                background: @GetColorForCategory(moodGrp.Category);
-                                border-radius: 4px;">
-                            </div>
-                        </div>
+        <!-- Avg Word Count -->
+        <div class="stat-card">
+            <div class="stat-label">Avg. Word Count</div>
+            <div class="stat-value">@avgWordCount <span style="font-size: 18px; font-weight: 500; color: var(--text-muted);">words</span></div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Per entry average</div>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+        <!-- Mood Distribution Chart -->
+        <div class="stat-card" style="grid-row: span 2;">
+            <h3 style="font-size: 18px; margin-bottom: 24px;">Mood Distribution</h3>
+            <div class="donut-chart" style="background: conic-gradient(@moodConicGradient);">
+                <div class="donut-center">
+                    <span style="font-size: 24px; font-weight: 800;">@allEntries.Count</span>
+                    <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Entries</span>
+                </div>
+            </div>
+            <div style="margin-top: 32px;">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #10b981;"></div>
+                    <span style="flex: 1;">Positive</span>
+                    <span style="font-weight: 600;">@posPerc%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #6366f1;"></div>
+                    <span style="flex: 1;">Neutral</span>
+                    <span style="font-weight: 600;">@neuPerc%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #ef4444;"></div>
+                    <span style="flex: 1;">Negative</span>
+                    <span style="font-weight: 600;">@negPerc%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Word Count Trend -->
+        <div class="stat-card" style="grid-column: span 2;">
+            <h3 style="font-size: 18px; margin-bottom: 8px;">Writing Activity</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Word count trends over the last 14 days.</p>
+            <div class="chart-container">
+                @foreach (var point in wordTrend)
+                {
+                    <div class="chart-bar" 
+                         style="height: @(point.Height)px;" 
+                         data-value="@point.Words words"
+                         title="@point.Date.ToShortDateString(): @point.Words words">
                     </div>
                 }
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text-muted);">
+                <span>@startDate.ToString("MMM dd")</span>
+                <span>@DateTime.Today.ToString("MMM dd")</span>
             </div>
         </div>
 
         <!-- Tag Breakdown -->
-        <div class="card">
-            <h3 style="margin-bottom: 24px;">Tag Breakdown</h3>
-
-            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                @foreach (var tag in GetTagUsage().Take(10))
+        <div class="stat-card">
+            <h3 style="font-size: 18px; margin-bottom: 24px;">Category Breakdown</h3>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                @foreach (var cat in categoryBreakdown)
                 {
-                    <div style="background: var(--bg-main);
-                                border: 1px solid var(--border);
-                                padding: 8px 16px;
-                                border-radius: 8px;
-                                flex: 1;
-                                min-width: 120px;">
-                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
-                            #@tag.Name
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span>@cat.Name</span>
+                            <span style="font-weight: 600;">@cat.Percentage%</span>
                         </div>
-                        <div style="font-weight: 700; font-size: 18px;">
-                            @tag.Count
+                        <div style="height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden;">
+                            <div style="height: 100%; width: @cat.Percentage%; background: var(--primary); border-radius: 3px;"></div>
                         </div>
                     </div>
+                }
+                @if (!categoryBreakdown.Any())
+                {
+                    <p style="color: var(--text-muted); font-size: 13px;">No categories recorded yet.</p>
                 }
             </div>
         </div>
 
-        <!-- Word Count Trends -->
-        <div class="card" style="grid-column: span 2;">
-            <h3 style="margin-bottom: 24px;">Word Count Trends (Last 7 Days)</h3>
-
-            <div style="display: flex;
-                        align-items: flex-end;
-                        height: 200px;
-                        gap: 12px;
-                        padding-bottom: 24px;
-                        border-bottom: 1px solid var(--border);">
-
-                @foreach (var trend in GetWordCountTrend())
+        <!-- Missed Days -->
+        <div class="stat-card">
+            <h3 style="font-size: 18px; margin-bottom: 24px;">Consistency (Last 28 Days)</h3>
+            <div class="missed-days-grid">
+                @foreach (var day in consistencyGrid)
                 {
-                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                        <div style="
-                            width: 100%;
-                            min-width: 30px;
-                            background: var(--primary);
-                            border-radius: 4px 4px 0 0;
-                            transition: height 0.3s;
-                            height: @(GetBarHeight(trend.Count, 500))px;">
-                        </div>
-
-                        <span style="font-size: 10px;
-                                     color: var(--text-muted);
-                                     transform: rotate(-45deg);
-                                     height: 30px;
-                                     white-space: nowrap;">
-                            @trend.Date.ToString("MM/dd")
-                        </span>
+                    <div class="day-cell @(day.IsPresent ? "day-present" : (day.Date > DateTime.Today ? "day-future" : "day-missed"))" 
+                         title="@day.Date.ToShortDateString()">
+                        @day.Date.Day
                     </div>
                 }
             </div>
+            <div style="margin-top: 16px; display: flex; gap: 16px; font-size: 11px;">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div class="legend-dot day-present" style="width: 8px; height: 8px;"></div> Written
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div class="legend-dot day-missed" style="width: 8px; height: 8px;"></div> Missed
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Most Used Tags -->
+    <div class="stat-card" style="margin-bottom: 40px;">
+        <h3 style="font-size: 18px; margin-bottom: 24px; text-align: center;">Tag Cloud</h3>
+        <div class="tag-cloud">
+            @foreach (var tag in tagCloud)
+            {
+                <div class="cloud-item" style="font-size: @(tag.Size)px; opacity: @(tag.Opacity); font-weight: @(tag.Size > 16 ? "700" : "500");">
+                    #@tag.Name
+                </div>
+            }
+            @if (!tagCloud.Any())
+            {
+                <p style="color: var(--text-muted); font-size: 13px;">No tags used yet.</p>
+            }
         </div>
     </div>
 </div>
 
 @code {
-    private List<(string Category, int Percentage)> GetMoodDistribution()
-    {
-        var entries = JournalService.GetAllEntries();
-        if (!entries.Any())
-            return new();
+    private List<JournalEntry> allEntries = new();
+    private int currentStreak;
+    private int longestStreak;
+    private int avgWordCount;
+    private string mostFrequentMood = "N/A";
+    private string mostFrequentMoodEmoji = "❓";
+    private int mostFrequentMoodCount = 0;
 
-        return entries
-            .GroupBy(e => e.PrimaryMood?.Category ?? MoodCategory.Neutral)
-            .Select(g => (g.Key.ToString(), (int)((double)g.Count() / entries.Count * 100)))
-            .ToList();
+    private string moodConicGradient = "#6366f1 0deg 360deg";
+    private int posPerc, neuPerc, negPerc;
+
+    private List<WordTrendPoint> wordTrend = new();
+    private DateTime startDate;
+
+    private List<CategoryStat> categoryBreakdown = new();
+    private List<TagCloudItem> tagCloud = new();
+    private List<ConsistencyDay> consistencyGrid = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        allEntries = await JournalService.GetAllEntries();
+        currentStreak = await JournalService.GetCurrentStreak();
+        longestStreak = await JournalService.GetLongestStreak();
+
+        CalculateStats();
+        CalculateMoodDistribution();
+        CalculateWordTrend();
+        CalculateCategoryBreakdown();
+        CalculateTagCloud();
+        CalculateConsistency();
     }
 
-    private string GetColorForCategory(string cat)
+    private void CalculateStats()
     {
-        return cat switch
+        if (!allEntries.Any()) return;
+
+        avgWordCount = (int)allEntries.Average(e => e.WordCount);
+        
+        var moodGroup = allEntries
+            .Where(e => e.PrimaryMood != null)
+            .GroupBy(e => e.PrimaryMood!.Name)
+            .OrderByDescending(g => g.Count())
+            .FirstOrDefault();
+
+        if (moodGroup != null)
         {
-            "Positive" => "#10b981",
-            "Neutral" => "#6366f1",
-            "Negative" => "#ef4444",
-            _ => "#94a3b8"
-        };
+            mostFrequentMood = moodGroup.Key;
+            mostFrequentMoodCount = moodGroup.Count();
+            mostFrequentMoodEmoji = allEntries.First(e => e.PrimaryMood?.Name == mostFrequentMood).PrimaryMood?.Emoji ?? "❓";
+        }
     }
 
-    private List<(string Name, int Count)> GetTagUsage()
+    private void CalculateMoodDistribution()
     {
-        return JournalService.GetAllEntries()
-            .SelectMany(e => e.Tags)
-            .GroupBy(t => t)
-            .Select(g => (g.Key, g.Count()))
-            .OrderByDescending(x => x.Item2)
-            .ToList();
+        if (!allEntries.Any()) return;
+
+        int total = allEntries.Count;
+        int pos = allEntries.Count(e => e.PrimaryMood?.Category == MoodCategory.Positive);
+        int neu = allEntries.Count(e => e.PrimaryMood?.Category == MoodCategory.Neutral || e.PrimaryMood == null);
+        int neg = allEntries.Count(e => e.PrimaryMood?.Category == MoodCategory.Negative);
+
+        posPerc = (int)Math.Round((double)pos / total * 100);
+        neuPerc = (int)Math.Round((double)neu / total * 100);
+        negPerc = 100 - posPerc - neuPerc;
+
+        // Create conic gradient: Positive (green), Neutral (indigo), Negative (red)
+        double posEnd = posPerc * 3.6;
+        double neuEnd = posEnd + (neuPerc * 3.6);
+        
+        moodConicGradient = $"#10b981 0deg {posEnd}deg, #6366f1 {posEnd}deg {neuEnd}deg, #ef4444 {neuEnd}deg 360deg";
     }
 
-    private List<(DateTime Date, int Count)> GetWordCountTrend()
+    private void CalculateWordTrend()
     {
-        var result = new List<(DateTime, int)>();
+        wordTrend.Clear();
+        startDate = DateTime.Today.AddDays(-13);
+        int maxWords = 0;
 
-        for (int i = 6; i >= 0; i--)
+        for (int i = 0; i < 14; i++)
         {
-            var date = DateTime.Today.AddDays(-i);
-            var entry = JournalService.GetEntryByDate(date);
-            result.Add((date, entry?.WordCount ?? 0));
+            var date = startDate.AddDays(i);
+            var words = allEntries.Where(e => e.Date.Date == date.Date).Sum(e => e.WordCount);
+            if (words > maxWords) maxWords = words;
+            wordTrend.Add(new WordTrendPoint { Date = date, Words = words });
         }
 
-        return result;
+        // Calculate heights (max 200px)
+        foreach (var p in wordTrend)
+        {
+            p.Height = maxWords == 0 ? 0 : (int)((double)p.Words / maxWords * 200);
+            if (p.Height < 4 && p.Words > 0) p.Height = 4; // Min visibility
+        }
     }
 
-    private int GetBarHeight(int count, int max)
+    private void CalculateCategoryBreakdown()
     {
-        if (max == 0) return 0;
-        return (int)Math.Min(200, (double)count / max * 200);
+        if (!allEntries.Any()) return;
+        
+        categoryBreakdown = allEntries
+            .Where(e => !string.IsNullOrEmpty(e.Category))
+            .GroupBy(e => e.Category)
+            .Select(g => new CategoryStat { 
+                Name = g.Key, 
+                Percentage = (int)Math.Round((double)g.Count() / allEntries.Count * 100) 
+            })
+            .OrderByDescending(x => x.Percentage)
+            .Take(5)
+            .ToList();
     }
+
+    private void CalculateTagCloud()
+    {
+        var tags = allEntries.SelectMany(e => e.Tags)
+            .GroupBy(t => t.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(g => new { Name = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(20)
+            .ToList();
+
+        if (!tags.Any()) return;
+        int max = tags.First().Count;
+
+        tagCloud = tags.Select(t => new TagCloudItem {
+            Name = t.Name,
+            Size = 12 + (int)((double)t.Count / max * 16),
+            Opacity = 0.5 + ((double)t.Count / max * 0.5)
+        }).ToList();
+    }
+
+    private void CalculateConsistency()
+    {
+        var end = DateTime.Today;
+        var start = end.AddDays(-27);
+        var entryDates = new HashSet<DateTime>(allEntries.Select(e => e.Date.Date));
+
+        consistencyGrid.Clear();
+        for (var d = start; d <= end; d = d.AddDays(1))
+        {
+            consistencyGrid.Add(new ConsistencyDay { 
+                Date = d, 
+                IsPresent = entryDates.Contains(d.Date) 
+            });
+        }
+    }
+
+    public class WordTrendPoint { public DateTime Date { get; set; } public int Words { get; set; } public int Height { get; set; } }
+    public class CategoryStat { public string Name { get; set; } public int Percentage { get; set; } }
+    public class TagCloudItem { public string Name { get; set; } public int Size { get; set; } public double Opacity { get; set; } }
+    public class ConsistencyDay { public DateTime Date { get; set; } public bool IsPresent { get; set; } }
 }

@@ -1,3 +1,5 @@
+@page "/edit/{Id:guid}"
+@page "/edit/new"
 @page "/edit/{DateString}"
 @using YourAppName.Services
 @using YourAppName.Models
@@ -31,14 +33,16 @@
                 </select>
             </div>
             <div style="flex: 1; min-width: 250px;">
-                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Specific Moods (Optional)</label>
+                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Specific Moods (Max 2)</label>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main); min-height: 42px;">
                     @if (!string.IsNullOrEmpty(selectedCategory) && moodClusters.ContainsKey(selectedCategory))
                     {
                         @foreach (var m in moodClusters[selectedCategory].Moods)
                         {
-                            <label style="font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; background: var(--bg-card); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);">
-                                <input type="checkbox" checked="@IsSecondaryMoodSelected(m.Name)" @onchange="(e) => ToggleSecondaryMood(m, e.Value)" />
+                            <label style="font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; background: var(--bg-card); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); opacity: @(entry.SecondaryMoods.Count >= 2 && !IsSecondaryMoodSelected(m.Name) ? "0.5" : "1")">
+                                <input type="checkbox" checked="@IsSecondaryMoodSelected(m.Name)" 
+                                       disabled="@(entry.SecondaryMoods.Count >= 2 && !IsSecondaryMoodSelected(m.Name))"
+                                       @onchange="(e) => ToggleSecondaryMood(m, e.Value)" />
                                 @m.Emoji @m.Name
                             </label>
                         }
@@ -50,8 +54,18 @@
                 </div>
             </div>
 
-            </div>
             <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Entry Category</label>
+                <select @bind="entry.Category" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);">
+                    <option value="">Select Category...</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat">@cat</option>
+                    }
+                </select>
+            </div>
+
+            <div style="flex: 1; min-width: 150px;">
                 <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Security PIN (Optional)</label>
                 <input type="password" @bind="entry.Pin" placeholder="Set 4-digit PIN..." maxlength="4"
                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);" />
@@ -85,6 +99,7 @@
             Last updated: @entry.UpdatedAt.ToString("g")
         </div>
     }
+    </div>
 
 
 @if (showPinModal)
@@ -110,6 +125,7 @@
 }
 
 @code {
+    [Parameter] public Guid? Id { get; set; }
     [Parameter] public string DateString { get; set; }
     private DateTime TargetDate => DateTime.TryParse(DateString, out var d) ? d : DateTime.Today;
 
@@ -136,21 +152,27 @@
             new Mood { Name = "Excited", Category = MoodCategory.Positive, Emoji = "🤩" },
             new Mood { Name = "Relaxed", Category = MoodCategory.Positive, Emoji = "😌" },
             new Mood { Name = "Grateful", Category = MoodCategory.Positive, Emoji = "🙏" },
-            new Mood { Name = "Confident", Category = MoodCategory.Positive, Emoji = "😎" }
+            new Mood { Name = "Confident", Category = MoodCategory.Positive, Emoji = "😎" },
+            new Mood { Name = "Inspired", Category = MoodCategory.Positive, Emoji = "✨" },
+            new Mood { Name = "Proud", Category = MoodCategory.Positive, Emoji = "🏆" }
         })},
         { "Neutral", ("😐", new List<Mood> {
             new Mood { Name = "Calm", Category = MoodCategory.Neutral, Emoji = "😐" },
             new Mood { Name = "Thoughtful", Category = MoodCategory.Neutral, Emoji = "🤔" },
             new Mood { Name = "Curious", Category = MoodCategory.Neutral, Emoji = "🧐" },
             new Mood { Name = "Nostalgic", Category = MoodCategory.Neutral, Emoji = "🎞️" },
-            new Mood { Name = "Bored", Category = MoodCategory.Neutral, Emoji = "😫" }
+            new Mood { Name = "Bored", Category = MoodCategory.Neutral, Emoji = "😫" },
+            new Mood { Name = "Busy", Category = MoodCategory.Neutral, Emoji = "⏳" },
+            new Mood { Name = "Sleepy", Category = MoodCategory.Neutral, Emoji = "😴" }
         })},
         { "Negative", ("😔", new List<Mood> {
             new Mood { Name = "Sad", Category = MoodCategory.Negative, Emoji = "😔" },
             new Mood { Name = "Angry", Category = MoodCategory.Negative, Emoji = "😠" },
             new Mood { Name = "Stressed", Category = MoodCategory.Negative, Emoji = "😫" },
             new Mood { Name = "Lonely", Category = MoodCategory.Negative, Emoji = "🙁" },
-            new Mood { Name = "Anxious", Category = MoodCategory.Negative, Emoji = "😰" }
+            new Mood { Name = "Anxious", Category = MoodCategory.Negative, Emoji = "😰" },
+            new Mood { Name = "Frustrated", Category = MoodCategory.Negative, Emoji = "😤" },
+            new Mood { Name = "Exhausted", Category = MoodCategory.Negative, Emoji = "🥱" }
         })}
     };
 
@@ -185,36 +207,40 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var existing = JournalService.GetEntryByDate(TargetDate);
-        if (existing != null)
+        if (Id.HasValue && Id.Value != Guid.Empty)
         {
-            entry = new JournalEntry
+            var existing = await JournalService.GetEntryById(Id.Value);
+            if (existing != null)
             {
-                Id = existing.Id,
-                Title = existing.Title,
-                Content = existing.Content,
-                Date = existing.Date,
-                PrimaryMood = existing.PrimaryMood,
-                Category = existing.Category,
-                Tags = existing.Tags,
-                Pin = existing.Pin,
-                CreatedAt = existing.CreatedAt,
-                UpdatedAt = existing.UpdatedAt
-            };
-
-            if (!string.IsNullOrEmpty(entry.Pin))
-            {
-                showPinModal = true;
+                entry = existing;
+                if (!string.IsNullOrEmpty(entry.Pin)) showPinModal = true;
+                selectedCategory = entry.PrimaryMood?.Name;
+                tagsString = string.Join(", ", entry.Tags);
+                return;
             }
+        }
 
+        if (DateString == "new" || string.IsNullOrEmpty(DateString) || DateString == "id")
+        {
+            entry = new JournalEntry { Date = DateTime.Today, Id = Guid.NewGuid() };
+            return;
+        }
+
+        // Keep date-based lookup as a fallback for old links or specific date navigation
+        var existingByDate = await JournalService.GetEntryByDate(TargetDate);
+        if (existingByDate != null)
+        {
+            entry = existingByDate;
+            if (!string.IsNullOrEmpty(entry.Pin)) showPinModal = true;
             selectedCategory = entry.PrimaryMood?.Name;
             tagsString = string.Join(", ", entry.Tags);
         }
         else
         {
             entry.Date = TargetDate;
+            entry.Id = Guid.NewGuid();
         }
     }
 
@@ -231,7 +257,7 @@
             };
         }
         entry.Tags = tagsString?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList() ?? new List<string>();
-        JournalService.SaveEntry(entry);
+        await JournalService.SaveEntry(entry);
         Nav.NavigateTo("/");
     }
 
@@ -255,7 +281,7 @@
     {
         if ((bool)checkedValue)
         {
-            if (!entry.SecondaryMoods.Any(m => m.Name == mood.Name))
+            if (entry.SecondaryMoods.Count < 2 && !entry.SecondaryMoods.Any(m => m.Name == mood.Name))
             {
                 entry.SecondaryMoods.Add(mood);
             }

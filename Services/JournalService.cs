@@ -1,96 +1,113 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using SQLite;
 using YourAppName.Models;
 
 namespace YourAppName.Services
 {
     public class JournalService
     {
-        private List<JournalEntry> _entries = new List<JournalEntry>();
+        private readonly DatabaseService _databaseService;
 
-        public JournalService()
+        public JournalService(DatabaseService databaseService)
         {
-            AddSampleData();
+            _databaseService = databaseService;
         }
 
-        public List<JournalEntry> GetAllEntries() => _entries.OrderByDescending(e => e.Date).ToList();
+        private async Task<SQLiteAsyncConnection> GetDatabase() => await _databaseService.GetConnectionAsync();
 
-        public JournalEntry GetEntryByDate(DateTime date) => _entries.FirstOrDefault(e => e.Date.Date == date.Date);
-
-        public void SaveEntry(JournalEntry entry)
+        public async Task<List<JournalEntry>> GetAllEntries()
         {
-            var existing = _entries.FirstOrDefault(e => e.Date.Date == entry.Date.Date);
-            if (existing != null)
+            var db = await GetDatabase();
+            return await db.Table<JournalEntry>().OrderByDescending(e => e.Date).ToListAsync();
+        }
+
+        public async Task<JournalEntry?> GetEntryById(Guid id)
+        {
+            var db = await GetDatabase();
+            return await db.Table<JournalEntry>().FirstOrDefaultAsync(e => e.Id == id);
+        }
+
+        public async Task<JournalEntry?> GetEntryByDate(DateTime date)
+        {
+            var db = await GetDatabase();
+            var startOfDay = date.Date;
+            var endOfDay = startOfDay.AddDays(1);
+            
+            // Note: Since SQLite stores dates as ticks or strings, we fetch and filter in memory for precision 
+            // unless we want to use specific SQL functions. For a journal, fetching one day's worth is cheap.
+            var entries = await db.Table<JournalEntry>().ToListAsync();
+            return entries.FirstOrDefault(e => e.Date.Date == date.Date);
+        }
+
+        public async Task SaveEntry(JournalEntry entry)
+        {
+            var db = await GetDatabase();
+            entry.UpdatedAt = DateTime.Now;
+
+            // Check if entry exists by ID first
+            var existingById = await GetEntryById(entry.Id);
+            if (existingById != null)
             {
-                existing.Title = entry.Title;
-                existing.Content = entry.Content;
-                existing.PrimaryMood = entry.PrimaryMood;
-                existing.SecondaryMoods = entry.SecondaryMoods;
-                existing.Category = entry.Category;
-                existing.Tags = entry.Tags;
-                existing.Pin = entry.Pin;
-                existing.UpdatedAt = DateTime.Now;
+                await db.UpdateAsync(entry);
+                return;
+            }
+
+            // Fallback: check if an entry exists for this specific date (business rule)
+            var existingByDate = await GetEntryByDate(entry.Date);
+            if (existingByDate != null)
+            {
+                entry.Id = existingByDate.Id; // Keep the same ID
+                await db.UpdateAsync(entry);
             }
             else
             {
-                _entries.Add(entry);
+                if (entry.Id == Guid.Empty) entry.Id = Guid.NewGuid();
+                await db.InsertAsync(entry);
             }
         }
 
-        public void DeleteEntry(Guid id)
+        public async Task DeleteEntry(Guid id)
         {
-            var entry = _entries.FirstOrDefault(e => e.Id == id);
-            if (entry != null)
-            {
-                _entries.Remove(entry);
-            }
+            var db = await GetDatabase();
+            await db.DeleteAsync<JournalEntry>(id);
         }
 
-        public List<JournalEntry> Search(string query)
+        public async Task<List<JournalEntry>> Search(string query)
         {
-            if (string.IsNullOrWhiteSpace(query)) return GetAllEntries();
-            query = query.ToLower();
-            return _entries.Where(e => 
-                (e.Title?.ToLower().Contains(query) ?? false) || 
-                (e.Content?.ToLower().Contains(query) ?? false) ||
-                (e.Tags.Any(t => t.ToLower().Contains(query)))
+            if (string.IsNullOrWhiteSpace(query)) return await GetAllEntries();
+            
+            var allEntries = await GetAllEntries();
+            var lowerQuery = query.ToLower();
+
+            // Try to see if the query is a date
+            bool isDate = DateTime.TryParse(query, out var searchDate);
+
+            return allEntries.Where(e => 
+                (isDate && e.Date.Date == searchDate.Date) ||
+                (e.Title?.ToLower().Contains(lowerQuery) ?? false) || 
+                (e.Content?.ToLower().Contains(lowerQuery) ?? false) ||
+                (e.Tags.Any(t => t.ToLower().Contains(lowerQuery))) ||
+                (e.Date.ToString("MMMM dd, yyyy").ToLower().Contains(lowerQuery)) ||
+                (e.Date.ToString("yyyy-MM-dd").ToLower().Contains(lowerQuery))
             ).ToList();
         }
 
-        private void AddSampleData()
+        public async Task<int> GetCurrentStreak()
         {
-            var positiveMoods = new List<Mood> {
-                new Mood { Name = "Happy", Category = MoodCategory.Positive, Emoji = "😊" },
-                new Mood { Name = "Grateful", Category = MoodCategory.Positive, Emoji = "🙏" }
-            };
-
-            _entries.Add(new JournalEntry
-            {
-                Title = "A Productive Day",
-                Content = "I finished all my tasks and went for a run. Feeling great!",
-                Date = DateTime.Today.AddDays(-1),
-                PrimaryMood = positiveMoods[0],
-                Category = "Work",
-                Tags = new List<string> { "Exercise", "Work" }
-            });
-
-            _entries.Add(new JournalEntry
-            {
-                Title = "Relaxing Sunday",
-                Content = "Spent the day reading and meditation. Very peaceful morning.",
-                Date = DateTime.Today.AddDays(-2),
-                PrimaryMood = new Mood { Name = "Calm", Category = MoodCategory.Neutral, Emoji = "😐" },
-                Category = "Self-care",
-                Tags = new List<string> { "Reading", "Meditation" }
-            });
-        }
-
-        public int GetCurrentStreak()
-        {
+            var entries = await GetAllEntries();
             int streak = 0;
             DateTime date = DateTime.Today;
-            while (_entries.Any(e => e.Date.Date == date.Date))
+            
+            // Check if there's an entry for today. If not, check if there was one yesterday to keep streak alive.
+            if (!entries.Any(e => e.Date.Date == date.Date))
+            {
+                date = date.AddDays(-1);
+            }
+
+            while (entries.Any(e => e.Date.Date == date.Date))
             {
                 streak++;
                 date = date.AddDays(-1);
@@ -98,19 +115,24 @@ namespace YourAppName.Services
             return streak;
         }
 
-        public int GetLongestStreak()
+        public async Task<int> GetLongestStreak()
         {
-            if (!_entries.Any()) return 0;
-            var dates = _entries.Select(e => e.Date.Date).Distinct().OrderByDescending(d => d).ToList();
+            var entries = await GetAllEntries();
+            if (!entries.Any()) return 0;
+            
+            var dates = entries.Select(e => e.Date.Date).Distinct().OrderByDescending(d => d).ToList();
             int longest = 0;
             int current = 0;
             
             for (int i = 0; i < dates.Count; i++)
             {
                 current = 1;
-                while (i + 1 < dates.Count && (dates[i] - dates[i+1]).Days == 1)
+                while (i + 1 < dates.Count && (dates[i] - dates[i+1]).TotalDays <= 1.5) // Using 1.5 to handle slight date offsets
                 {
-                    current++;
+                    if ((dates[i] - dates[i+1]).TotalDays >= 0.5) // Only count if it's a different day
+                    {
+                        current++;
+                    }
                     i++;
                 }
                 if (current > longest) longest = current;
@@ -118,12 +140,15 @@ namespace YourAppName.Services
             return longest;
         }
 
-        public List<DateTime> GetMissedDays(DateTime start, DateTime end)
+        public async Task<List<DateTime>> GetMissedDays(DateTime start, DateTime end)
         {
+            var entries = await GetAllEntries();
+            var entryDates = new HashSet<DateTime>(entries.Select(e => e.Date.Date));
             var missed = new List<DateTime>();
+            
             for (var d = start.Date; d <= end.Date; d = d.AddDays(1))
             {
-                if (!_entries.Any(e => e.Date.Date == d))
+                if (!entryDates.Contains(d))
                 {
                     missed.Add(d);
                 }

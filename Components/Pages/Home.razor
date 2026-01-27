@@ -18,15 +18,15 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px;">
         <div class="card">
             <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Current Streak</h3>
-            <div style="font-size: 32px; font-weight: 700; color: var(--primary);">@JournalService.GetCurrentStreak() Days</div>
+            <div style="font-size: 32px; font-weight: 700; color: var(--primary);">@currentStreak Days</div>
         </div>
         <div class="card">
             <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Longest Streak</h3>
-            <div style="font-size: 32px; font-weight: 700; color: #10b981;">@JournalService.GetLongestStreak() Days</div>
+            <div style="font-size: 32px; font-weight: 700; color: #10b981;">@longestStreak Days</div>
         </div>
         <div class="card">
             <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Total Entries</h3>
-            <div style="font-size: 32px; font-weight: 700;">@JournalService.GetAllEntries().Count</div>
+            <div style="font-size: 32px; font-weight: 700;">@totalEntries</div>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
                 <div style="display: flex; flex-direction: column; gap: 16px;">
                     @foreach (var entry in recentEntries)
                     {
-                        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;" @onclick="() => EditEntry(entry.Date)">
+                        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;" @onclick="() => EditEntry(entry.Id)">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                                 <h4 style="margin: 0;">
                                     @entry.Title
@@ -66,15 +66,15 @@
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="color: var(--text-muted);">Most Frequent Mood</span>
-                    <span style="font-weight: 600;">@GetMostFrequentMood()</span>
+                    <span style="font-weight: 600;">@mostFrequentMood</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="color: var(--text-muted);">Top Tag</span>
-                    <span style="font-weight: 600;">@GetTopTag()</span>
+                    <span style="font-weight: 600;">@topTag</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="color: var(--text-muted);">Avg. Word Count</span>
-                    <span style="font-weight: 600;">@GetAvgWordCount()</span>
+                    <span style="font-weight: 600;">@avgWordCount</span>
                 </div>
             </div>
         </div>
@@ -83,10 +83,39 @@
 
 @code {
     private List<JournalEntry> recentEntries = new();
+    private int currentStreak;
+    private int longestStreak;
+    private int totalEntries;
+    private string mostFrequentMood = "N/A";
+    private string topTag = "N/A";
+    private int avgWordCount;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        recentEntries = JournalService.GetAllEntries().Take(3).ToList();
+        var allEntries = await JournalService.GetAllEntries();
+        recentEntries = allEntries.Take(3).ToList();
+        totalEntries = allEntries.Count;
+        
+        currentStreak = await JournalService.GetCurrentStreak();
+        longestStreak = await JournalService.GetLongestStreak();
+        
+        if (allEntries.Any())
+        {
+            mostFrequentMood = allEntries
+                .Where(e => e.PrimaryMood != null && !string.IsNullOrEmpty(e.PrimaryMood.Name))
+                .GroupBy(e => e.PrimaryMood!.Name)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault()?.Key ?? "N/A";
+
+            topTag = allEntries
+                .SelectMany(e => e.Tags)
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .GroupBy(t => t.Trim(), StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault()?.Key ?? "N/A";
+
+            avgWordCount = (int)allEntries.Average(e => e.WordCount);
+        }
     }
 
     private void CreateNewEntry()
@@ -94,12 +123,8 @@
         Nav.NavigateTo($"/edit/{DateTime.Today:yyyy-MM-dd}");
     }
 
-    private void EditEntry(DateTime date)
+    private void EditEntry(Guid id)
     {
-        Nav.NavigateTo($"/edit/{date:yyyy-MM-dd}");
+        Nav.NavigateTo($"/edit/{id}");
     }
-
-    private string GetMostFrequentMood() => JournalService.GetAllEntries().GroupBy(e => e.PrimaryMood?.Name).OrderByDescending(g => g.Count()).FirstOrDefault()?.Key ?? "N/A";
-    private string GetTopTag() => JournalService.GetAllEntries().SelectMany(e => e.Tags).GroupBy(t => t).OrderByDescending(g => g.Count()).FirstOrDefault()?.Key ?? "N/A";
-    private int GetAvgWordCount() => JournalService.GetAllEntries().Any() ? (int)JournalService.GetAllEntries().Average(e => e.WordCount) : 0;
 }

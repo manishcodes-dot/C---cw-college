@@ -16,6 +16,7 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddSingleton<DatabaseService>();
         builder.Services.AddSingleton<JournalService>();
 
 #if DEBUG

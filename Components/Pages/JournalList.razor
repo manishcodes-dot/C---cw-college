@@ -3,6 +3,7 @@
 @using YourAppName.Models
 @inject JournalService JournalService
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <div class="fade-in">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -37,7 +38,7 @@
             {
                 <div class="card"
                      style="cursor: pointer; transition: transform 0.2s;"
-                     @onclick="() => EditEntry(entry.Date)">
+                     @onclick="() => EditEntry(entry.Id)">
 
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                         <div>
@@ -59,12 +60,21 @@
                                 @entry.PrimaryMood?.Emoji
                             </span>
 
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                             <button class="nav-link"
                                     style="color: #ef4444; padding: 4px;"
                                     @onclick:stopPropagation="true"
                                     @onclick="() => DeleteEntry(entry.Id)">
                                 🗑
                             </button>
+                            <button class="nav-link"
+                                    style="color: var(--primary); padding: 4px;"
+                                    title="Export to PDF"
+                                    @onclick:stopPropagation="true"
+                                    @onclick="() => ExportToPdf(entry)">
+                                📥
+                            </button>
+                        </div>
                         </div>
                     </div>
 
@@ -107,30 +117,41 @@
     private List<JournalEntry> filteredEntries = new();
     private string searchQuery = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        filteredEntries = JournalService.GetAllEntries();
+        filteredEntries = await JournalService.GetAllEntries();
     }
 
-    private void PerformSearch()
+    private async Task PerformSearch()
     {
-        filteredEntries = JournalService.Search(searchQuery);
+        filteredEntries = await JournalService.Search(searchQuery);
     }
 
-    private void ClearSearch()
+    private async Task ClearSearch()
     {
         searchQuery = "";
-        PerformSearch();
+        await PerformSearch();
     }
 
-    private void EditEntry(DateTime date)
+    private void EditEntry(Guid id)
     {
-        Nav.NavigateTo($"/edit/{date:yyyy-MM-dd}");
+        Nav.NavigateTo($"/edit/{id}");
     }
 
-    private void DeleteEntry(Guid id)
+    private async Task DeleteEntry(Guid id)
     {
-        JournalService.DeleteEntry(id);
-        PerformSearch();
+        await JournalService.DeleteEntry(id);
+        await PerformSearch();
+    }
+
+    private async Task ExportToPdf(JournalEntry entry)
+    {
+        await JS.InvokeVoidAsync("quillInterop.exportToPdf", 
+            entry.Title, 
+            entry.Content, 
+            entry.Date.ToString("yyyy-MM-dd"), 
+            entry.PrimaryMood?.Emoji + " " + entry.PrimaryMood?.Name,
+            entry.Category,
+            entry.Tags);
     }
 }
