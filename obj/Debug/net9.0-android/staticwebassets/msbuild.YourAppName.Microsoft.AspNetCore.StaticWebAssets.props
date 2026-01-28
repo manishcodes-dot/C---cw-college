@@ -12,12 +12,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>1b1l6e7ru5</Fingerprint>
-      <Integrity>3eeZoO5xaB5uXZ2SwsSwsZ5seKcLJdNvx8l645NTJYw=</Integrity>
+      <Fingerprint>v0nbecxa4q</Fingerprint>
+      <Integrity>T1d685mDlZ40TY2LwVUUPzphuipJ5ZrFHQxsfceypMo=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>4665</FileLength>
-      <LastWriteTime>Tue, 27 Jan 2026 05:54:38 GMT</LastWriteTime>
+      <FileLength>4890</FileLength>
+      <LastWriteTime>Tue, 27 Jan 2026 17:26:15 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\app.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\bootstrap\bootstrap.min.css'))">
@@ -92,12 +92,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>aof4o4rtel</Fingerprint>
-      <Integrity>pj9l21EjnVLs291ATs0yAZ9M+4/nzU4ZfZcOyD6YJaY=</Integrity>
+      <Fingerprint>lq6p9jdmpu</Fingerprint>
+      <Integrity>o+zOmZG61grgUpqnPODjRa7QvBEHC7StF0F+m/OyK0s=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>2358</FileLength>
-      <LastWriteTime>Tue, 27 Jan 2026 10:01:08 GMT</LastWriteTime>
+      <FileLength>3463</FileLength>
+      <LastWriteTime>Tue, 27 Jan 2026 17:26:52 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\quill-interop.js'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
